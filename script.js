@@ -35,25 +35,68 @@ function displayWeatherData(data) {
     const imageContainer = document.createElement('div');
     imageContainer.classList.add('image-container');
 
-    // Utilisez la clé d'API Unsplash ici
+    // Utilize the Unsplash API key here
     const unsplashAPIKey = 'AiqYxksAAmVPOVVR6n9vE2drMH51LW2zqShmaa0bBOU';
 
-    // Effectuez une requête à l'API Unsplash pour récupérer une image de la ville
+    // Make a request to the Unsplash API to retrieve an image of the city
     fetch(`https://api.unsplash.com/search/photos?query=${cityName}&client_id=${unsplashAPIKey}`)
         .then(response => response.json())
         .then(data => {
-            const photo = data.results[0]; // Obtenez la première photo de la liste des résultats
+            const photo = data.results[0]; // Get the first photo from the results list
 
             const image = document.createElement('img');
             image.src = photo.urls.regular;
             image.alt = "Picture of " + cityName;
 
-            // Ajoutez l'image au conteneur d'image
+            // Add the image to the image container
             imageContainer.appendChild(image);
         })
         .catch(error => console.log(error));
 
     resultsContainer.appendChild(imageContainer);
+
+    const temperatureData = [];
+    const dates = [];
+
+    for (let i = 0; i < data.list.length; i++) {
+        const forecast = data.list[i];
+        const temperature = convertKelvinToCelsius(forecast.main.temp);
+        const date = new Date(forecast.dt_txt).toLocaleDateString();
+
+        temperatureData.push(temperature);
+        if (!dates.includes(date)) {
+            dates.push(date)
+        }
+    }
+
+    const chartContainer = document.createElement('canvas');
+    chartContainer.id = 'temperatureChart';
+    resultsContainer.appendChild(chartContainer);
+
+    // Create the line chart using Chart.js
+    new Chart(chartContainer, {
+        type: 'line',
+        data: {
+            labels: dates,
+            datasets: [{
+                label: 'Temperature (°C)',
+                data: temperatureData,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    forecastElement.appendChild(resultsContainer);
+    cityInput.value = '';
 
     for (let i = 0; i < data.list.length; i++) {
         const forecast = data.list[i];
@@ -76,7 +119,6 @@ function displayWeatherData(data) {
         }
     }
     forecastElement.appendChild(resultsContainer);
-    cityInput.value = "";
 }
 
 // Event listener for the submit button
@@ -94,14 +136,12 @@ submitBtn.addEventListener('click', () => {
 cityInput.addEventListener('keypress', event => {
     if (event.key === 'Enter') {
         const city = cityInput.value.trim();
-
         if (city !== '') {
             getWeatherData(city);
             cityInput.value = '';
         }
     }
 });
-
 // Clear results
 const clearBtn = document.querySelector('.clearBtn');
 clearBtn.addEventListener('click', () => {
