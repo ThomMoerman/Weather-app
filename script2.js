@@ -44,7 +44,6 @@ function displayWeatherData(data) {
         .then(data => {
             const photo = data.results[0]; // Obtenez la première photo de la liste des résultats
 
-            // Créez un élément d'image et définissez son URL source
             const image = document.createElement('img');
             image.src = photo.urls.regular;
             image.alt = "Picture of " + cityName;
@@ -76,7 +75,6 @@ function displayWeatherData(data) {
             resultsContainer.appendChild(forecastItem);
         }
     }
-
     forecastElement.appendChild(resultsContainer);
     cityInput.value = "";
 }
