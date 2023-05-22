@@ -47,13 +47,19 @@ function displayWeatherData(data) {
         .then(response => response.json())
         .then(data => {
             const photo = data.results[0]; // Get the first photo from the results list
-
-            const image = document.createElement('img');
-            image.src = photo.urls.regular;
-            image.alt = "Picture of " + cityName;
-
+            console.log(photo);
+            if (photo === undefined) {
+                const image = document.createElement('img');
+                image.src = 'assets/default.png'
+                imageContainer.appendChild(image);
+            } else {
+                const image = document.createElement('img');
+                image.src = photo.urls.regular;
+                image.alt = "Picture of " + cityName;
+                imageContainer.appendChild(image);
+            }
             // Add the image to the image container
-            imageContainer.appendChild(image);
+            // imageContainer.appendChild(image);
         })
         .catch(error => console.log(error));
 
