@@ -205,7 +205,7 @@ function changeBackgroundImage() {
                     resultsContainer.style.backgroundImage = "url('assets/clear_sky.png')";
                     break;
                 case 'fewclouds':
-                    resultsContainer.style.backgroundImage = "url('assets/few_clouds.png')";
+                    resultsContainer.style.backgroundImage = "url('assets/scattered_clouds.png')";
                     break;
                 case 'scatteredclouds':
                     resultsContainer.style.backgroundImage = "url('assets/scattered_clouds.png')";
