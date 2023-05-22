@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces&family=Merriweather+Sans&display=swap');
 body {
-    background-color: rgba(245, 245, 220, 0.911);
+    background-color: rgba(53, 53, 53, 0.911);
     font-family: 'Merriweather Sans', sans-serif;
-    color: rgba(36, 50, 75, 0.986);
+    color: rgb(255, 255, 255);
 }
 
 #requestContainer {
@@ -14,12 +14,26 @@ body {
 
 .results-container {
     display: flex;
-    flex-direction: column;
-    width: 250px;
+    flex-direction: row;
+    width: 550px;
     margin: 10px;
     border: solid 0.5px #cbcbcb;
     padding: 10px;
     border-radius: 10px;
+    background-size: cover;
+}
+
+.leftResultsContainer {
+    margin-top: 105px;
+    margin-left: 10px;
+}
+
+.rightResultsContainer {
+    margin-left: 50px;
+}
+
+#temperatureChart {
+    margin-top: 50px;
 }
 
 .container {
@@ -44,6 +58,13 @@ body {
 
 .forecast-item {
     margin: 10px;
+    img {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        margin-top: 5px;
+    }
+    list-style-type: none;
 }
 
 .submitBtn {

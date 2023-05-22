@@ -29,8 +29,12 @@ function saveCityResults(city, data) {
 // Function to display weather data
 function displayWeatherData(data) {
     const resultsContainer = document.createElement('div');
+    const leftResultsContainer = document.createElement('div');
+    leftResultsContainer.classList.add('leftResultsContainer');
+    const rightResultsContainer = document.createElement('div')
+    rightResultsContainer.classList.add('rightResultsContainer');
     resultsContainer.classList.add('results-container');
-    resultsContainer.innerHTML = `<h2>${data.city.name}</h2>`;
+    leftResultsContainer.innerHTML = `<h2>${data.city.name}</h2>`;
     const cityName = data.city.name;
     const imageContainer = document.createElement('div');
     imageContainer.classList.add('image-container');
@@ -53,7 +57,7 @@ function displayWeatherData(data) {
         })
         .catch(error => console.log(error));
 
-    resultsContainer.appendChild(imageContainer);
+    leftResultsContainer.appendChild(imageContainer);
 
     const temperatureData = [];
     const dates = [];
@@ -63,15 +67,18 @@ function displayWeatherData(data) {
         const temperature = convertKelvinToCelsius(forecast.main.temp);
         const date = new Date(forecast.dt_txt).toLocaleDateString();
 
-        temperatureData.push(temperature);
-        if (!dates.includes(date)) {
-            dates.push(date)
+        if (i % 8 === 0) {
+            temperatureData.push(temperature);
+            if (!dates.includes(date)) {
+                dates.push(date)
+            }
         }
+        console.log(temperatureData)
     }
 
     const chartContainer = document.createElement('canvas');
     chartContainer.id = 'temperatureChart';
-    resultsContainer.appendChild(chartContainer);
+    leftResultsContainer.appendChild(chartContainer);
 
     // Create the line chart using Chart.js
     new Chart(chartContainer, {
@@ -81,44 +88,68 @@ function displayWeatherData(data) {
             datasets: [{
                 label: 'Temperature (°C)',
                 data: temperatureData,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
+                backgroundColor: 'rgba(255, 255, 255, 0.986)',
+                borderColor: 'rgba(255, 255, 255, 0.986)',
+                borderWidth: 1,
+                pointRadius: 3,
+                pointBackgroundColor: 'rgba(255, 255, 255, 0.986)',
+                pointBorderColor: 'rgba(255, 255, 255, 0.986)',
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: 'rgba(255, 255, 255, 0.986)',
+                pointHoverBorderColor: 'rgba(255, 255, 255, 0.986)',
             }]
         },
         options: {
             scales: {
+                x: {
+                    ticks: {
+                        color: 'white'
+                    },
+                    grid: {
+                        color: 'white'
+                    }
+                },
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    ticks: {
+                        color: 'white'
+                    },
+                    grid: {
+                        color: 'white'
+                    }
                 }
             }
         }
     });
 
-    forecastElement.appendChild(resultsContainer);
-    cityInput.value = '';
-
     for (let i = 0; i < data.list.length; i++) {
         const forecast = data.list[i];
         const temperature = convertKelvinToCelsius(forecast.main.temp);
-        const description = forecast.weather[0].description;
+        const description = forecast.weather[0].description.replace(/\s/g, '');
+        const iconTime = forecast.weather[0].icon;
+        let currentIconTime = "https://openweathermap.org/img/w/" + iconTime + ".png";
         const date = new Date(forecast.dt_txt);
         const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const dayOfWeek = daysOfWeek[date.getDay()];
         const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-
         if (i % 8 === 0) {
-            const forecastItem = document.createElement('div');
+            const forecastItem = document.createElement('li');
             forecastItem.classList.add('forecast-item');
+            console.log(description)
             forecastItem.innerHTML = `
-          <p class="dayDate">${dayOfWeek} - ${formattedDate}</p>
-          <p>Temperature: ${temperature} °C</p>
-          <p>Description: ${description}</p>
-        `;
-            resultsContainer.appendChild(forecastItem);
+            <p>${dayOfWeek} - ${formattedDate}</p>
+            <p>${temperature} °C</p>
+            <p><img src="${currentIconTime}"></p>     
+            `;
+            rightResultsContainer.appendChild(forecastItem);
         }
     }
+    const description = data.list[0].weather[0].description.replace(/\s/g, '');
+    resultsContainer.classList.add(description);
+    resultsContainer.appendChild(leftResultsContainer);
+    resultsContainer.appendChild(rightResultsContainer);
     forecastElement.appendChild(resultsContainer);
+    changeBackgroundImage();
 }
 
 // Event listener for the submit button
@@ -129,6 +160,7 @@ submitBtn.addEventListener('click', () => {
     if (city !== '') {
         getWeatherData(city);
         cityInput.value = '';
+        changeBackgroundImage();
     }
 });
 
@@ -139,6 +171,7 @@ cityInput.addEventListener('keypress', event => {
         if (city !== '') {
             getWeatherData(city);
             cityInput.value = '';
+            changeBackgroundImage();
         }
     }
 });
@@ -159,6 +192,56 @@ function convertKelvinToCelsius(kelvin) {
 function saveCityResultsToLocalStorage() {
     localStorage.setItem('cityResults', JSON.stringify(cityResults));
 }
+
+function changeBackgroundImage() {
+    const resultsContainers = document.querySelectorAll('.results-container');
+
+    resultsContainers.forEach(resultsContainer => {
+        const classList = resultsContainer.classList;
+
+        classList.forEach(className => {
+            switch (className) {
+                case 'clearsky':
+                    resultsContainer.style.backgroundImage = "url('assets/clear_sky.png')";
+                    break;
+                case 'fewclouds':
+                    resultsContainer.style.backgroundImage = "url('assets/few_clouds.png')";
+                    break;
+                case 'scatteredclouds':
+                    resultsContainer.style.backgroundImage = "url('assets/scattered_clouds.png')";
+                    resultsContainer.style.color = 'rgba(53, 53, 53, 0.911)'
+                    break;
+                case 'brokenclouds':
+                    resultsContainer.style.backgroundImage = "url('assets/scattered_clouds.png')";
+                    break;
+                case 'overcastclouds':
+                    resultsContainer.style.backgroundImage = "url('assets/few_clouds.png')";
+                    break;
+                case 'showerrain':
+                    resultsContainer.style.backgroundImage = "url('assets/rain.png')";
+                    break;
+                case 'lightrain':
+                    resultsContainer.style.backgroundImage = "url('assets/rain.png')";
+                    break;
+                case 'rain':
+                    resultsContainer.style.backgroundImage = "url('assets/rain.png')";
+                    break;
+                case 'thunderstorm':
+                    resultsContainer.style.backgroundImage = "url('assets/thunderstorm.jpg')";
+                    break;
+                case 'snow':
+                    resultsContainer.style.backgroundImage = "url('assets/snow.jpg')";
+                    break;
+                case 'mist':
+                    resultsContainer.style.backgroundImage = "url('assets/mist.jpg')";
+                    break;
+                default:
+                    break;
+            }
+        });
+    });
+}
+
 
 // Retrieve saved city results on page load
 document.addEventListener('DOMContentLoaded', () => {
