@@ -73,7 +73,6 @@ function displayWeatherData(data) {
                 dates.push(date)
             }
         }
-        console.log(temperatureData)
     }
 
     const chartContainer = document.createElement('canvas');
@@ -100,6 +99,11 @@ function displayWeatherData(data) {
             }]
         },
         options: {
+            legend: {
+                labels: {
+                    fontColor: "white"
+                }
+            },
             scales: {
                 x: {
                     ticks: {
@@ -135,7 +139,6 @@ function displayWeatherData(data) {
         if (i % 8 === 0) {
             const forecastItem = document.createElement('li');
             forecastItem.classList.add('forecast-item');
-            console.log(description)
             forecastItem.innerHTML = `
             <p>${dayOfWeek} - ${formattedDate}</p>
             <p>${temperature} °C</p>
@@ -218,6 +221,9 @@ function changeBackgroundImage() {
                     resultsContainer.style.backgroundImage = "url('assets/few_clouds.png')";
                     break;
                 case 'showerrain':
+                    resultsContainer.style.backgroundImage = "url('assets/rain.png')";
+                    break;
+                case 'moderaterain':
                     resultsContainer.style.backgroundImage = "url('assets/rain.png')";
                     break;
                 case 'lightrain':
